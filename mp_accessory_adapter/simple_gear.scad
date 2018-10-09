@@ -1,7 +1,3 @@
-// This module is a publicDomainGearV1.1.scad wrapper that makes it simple to size the gear based on outtermost diameter.
-// It is less flexible and the groove_depth feature is a crappy hack
-use <publicDomainGearV1.1.scad>
-
 module simple_gear(
     cyl_length_mm           = 10,
     cyl_diameter_mm         = 20,
@@ -10,27 +6,23 @@ module simple_gear(
     groove_depth_mm         = 1.5
 ){
     // -------------- Calculated Values -------------- \\
-    pi=3.1415926;
-    ACTUAL_DIAMETER     = cyl_diameter_mm-groove_depth_mm;
-    CYL_CIRCUMFERENCE   = pi*cyl_diameter_mm;
-    MM_PER_TOOTH        = (pi*cyl_diameter_mm)/(num_of_teeth+(0.64*pi));
-    RADIUS              = ACTUAL_DIAMETER/2;
-    HOLE_RADIUS         = center_hole_diameter/2;
+    center_hole_radius  = center_hole_diameter/2;
+    star_teeth_num      = num_of_teeth*2;
+    start_diameter      = cyl_diameter_mm/2;
 
-    union(){
-        gear(
-            mm_per_tooth        = MM_PER_TOOTH, 
-            number_of_teeth     = num_of_teeth, 
-            thickness           = cyl_length_mm, 
-            pressure_angle      = 28, 
-            hole_diameter       = center_hole_diameter
-        );
-        difference(){
-            cylinder(h=cyl_length_mm, r1=RADIUS, r2=RADIUS, center=true);
-            cylinder(h=cyl_length_mm+0.01, r1=HOLE_RADIUS, r2=HOLE_RADIUS, center=true);
-        };
+    // this module is taken from openScad examples
+    module star(num, radii, thickness) {
+        function r(a) = (floor(a / 10) % 2) ? 10 : 8;
+        linear_extrude(height = cyl_length_mm, center = true, twist = 0)
+        polygon([for (i=[0:num-1], a=i*360/num, r=radii[i%len(radii)]) [ r*cos(a), r*sin(a) ]]);
+    }
+
+    difference(){
+        star(star_teeth_num, [(start_diameter-groove_depth_mm),start_diameter], cyl_length_mm);
+        cylinder(h=cyl_length_mm+0.1, r1=center_hole_radius, r2=center_hole_radius, center=true, $fn=100);
     };
 }
+
 
 // examples:
 //-------------------------------------
@@ -38,10 +30,10 @@ module simple_gear(
 
 // translate([30, 0, 0])
 // simple_gear(
-//     cyl_length_mm=5,
-//     cyl_diameter_mm=10,
+//     cyl_length_mm=15,
+//     cyl_diameter_mm=18,
 //     center_hole_diameter=2,
-//     num_of_teeth=15,
-//     groove_depth_mm=5
+//     num_of_teeth=20,
+//     groove_depth_mm=1
 // );
 
