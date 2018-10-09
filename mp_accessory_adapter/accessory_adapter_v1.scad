@@ -1,112 +1,188 @@
+// TODO: documentation
+// TODO: images and definitions
+// TOOD: adjust values as per test prints
+
 use <modules/washer.scad>
 use <modules/quadratic_bezier.scad>
 use <modules/simple_gear.scad>
 
-MID_SECTION_LENGTH=100;
-MID_SECTION_DIAMETER=18;
-MID_SECTION_HOLE_DIAMETER=10;
-ADAPTER_GROOVED_MID_SECTION_LENGTH=10;
-ADAPTER_SMOOTH_MID_SECTION_LENGTH=10;
-GROOVE_DEPTH=1;
-NUMBER_OF_TEETH=20;
-WASHER_OUTTER_DIAMETER=20;
-WASHER_INNER_DIAMETER=5;
-WAHSER_THICKNESS=2;
-CONE_THICKNESS=2;
-// Calculated Values 
-GROOVED_MID_SECTION_LENGTH=MID_SECTION_LENGTH-2*ADAPTER_GROOVED_MID_SECTION_LENGTH-2*ADAPTER_SMOOTH_MID_SECTION_LENGTH;
+///////////////////////////// Module parameters /////////////////////////////
+FN                                      = 100;
+ADAPTER_Margin                          = 0.5;
 
-// entire accessory adapter
-union(){
-    // left screen adapter
+// mid section cylinder - 'Rick' bar
+BAR_Length                              = 175;
+BAR_Diameter                            = 17;
+BAR_InnerHoleDiameter                   = 10;
+BAR_NumberOfTeeth                       = 20;
+BAR_ToothDepth                          = 1;
+
+// post adapter section
+ADAPTER_WasherDiameter                  = 17.5;
+ADAPTER_WasherHoleDiameter              = 5;
+ADAPTER_WallThickness                   = 2;
+ADAPTER_ConeLength                      = 40;
+ADAPTER_EndDiameter                     = 11;
+
+// post adapter - cylynder transition
+ADAPTER_RickBarLength                   = 10;
+ADAPTER_SmoothBarLength                 = 10;
+
+//////////////////////// 'Private' Calculated Values ////////////////////////
+prv_FN                          = FN;
+// Rick bar section
+prv_BarDiameter                 = BAR_Diameter;
+prv_BarRadius                   = BAR_Diameter/2;
+prv_BarInnerHoleDiameter        = BAR_InnerHoleDiameter+ADAPTER_Margin*2;
+prv_BarInnerHoleRadius          = (BAR_InnerHoleDiameter/2)+ADAPTER_Margin;
+prv_BarNumberOfTeeth            = BAR_NumberOfTeeth;
+prv_BarToothDepth               = BAR_ToothDepth;
+prv_BarMidSectionLength         = BAR_Length-2*ADAPTER_RickBarLength-2*ADAPTER_SmoothBarLength;
+
+// post adapter section
+prv_PostWallThickness           = ADAPTER_WallThickness;
+prv_PostConeWasherSideRadius    = (ADAPTER_WasherDiameter+ADAPTER_Margin)/2;
+prv_PostWasherOutterDiameter    = (prv_PostConeWasherSideRadius*2)+prv_PostWallThickness*2;
+prv_PostWasherInnerDiameter     = ADAPTER_WasherHoleDiameter+ADAPTER_Margin;
+prv_PostConeRiderSideRadius     = (ADAPTER_EndDiameter+ADAPTER_Margin)/2;
+prv_PostConeRiderEndCapRadius   = prv_PostConeRiderSideRadius+prv_PostWallThickness+0.5;
+prv_PostConeLength              = ADAPTER_ConeLength+ADAPTER_Margin;
+prv_PostSmoothBarLength         = ADAPTER_SmoothBarLength;
+prv_PostRickBarLength           = ADAPTER_RickBarLength;
+
+// Z and Y axis are same for every bar section
+prv_BarZAxisPosition                = prv_BarRadius-prv_PostConeLength;
+prv_PostSmoothBarZAxisPosition      = prv_BarRadius-prv_PostConeLength;
+prv_PostRickBarZAxisPosition        = prv_BarRadius-prv_PostConeLength;
+
+prv_BarYAxisPosition                = -prv_PostWallThickness;
+prv_PostSmoothBarYAxisPosition      = -prv_PostWallThickness;
+prv_PostRickBarYAxisPosition        = -prv_PostWallThickness;
+// X-axis is different for every bar section
+prv_PostSmoothBarXAxisPosition      = prv_PostWasherOutterDiameter/2;
+prv_PostRickBarXAxisPosition        = prv_PostSmoothBarXAxisPosition+(prv_PostRickBarLength/2)+prv_PostSmoothBarLength;
+prv_BarXAxisPosition                = prv_PostRickBarXAxisPosition+(prv_PostRickBarLength/2)+prv_BarMidSectionLength/2;
+
+prv_PostRightAdapterXPosition       = 2*prv_PostConeWasherSideRadius+2*prv_PostRickBarLength+2*prv_PostSmoothBarLength+prv_BarMidSectionLength+2*prv_PostWallThickness;
+
+module screen_post_adapter(){
     union(){
-        translate([0,0,30+CONE_THICKNESS/2])
+        // ============ shape1: cone washer end ============
+        translate([0,0,prv_PostConeLength+prv_PostWallThickness*2])
         rotate([0,90,0])
         washer(
-            diameter_mm=WASHER_OUTTER_DIAMETER,
-            hole_diameter_mm=WASHER_INNER_DIAMETER,
-            thickness_mm=WAHSER_THICKNESS,
-            slice_angle=[0,0,0]
+            diameter_mm         = prv_PostWasherOutterDiameter,
+            hole_diameter_mm    = prv_PostWasherInnerDiameter,
+            thickness_mm        = prv_PostWallThickness,
+            slice_angle         = [0,0,0],
+            $fn                 = prv_FN
         );
+
+        // ============ shape2: cone body ============
         rotate([0,0,-135])
         color("yellow") bezier_cone(
-            p0=[10,29],
-            p1=[10,15],
-            p2=[5,0],
-            w=CONE_THICKNESS,
-            fill_degrees=180
+            p0              = [prv_PostConeWasherSideRadius,prv_PostConeLength],
+            p1              = [10,15],  // TODO: WARNING - this curve is not parametarized
+            p2              = [prv_PostConeRiderSideRadius,0],
+            w               = prv_PostWallThickness,
+            fill_degrees    = 180,
+            $fn             = prv_FN
         );
-        // smooth cylinder section
+
+        // ============ shape3: cone rider end cap ============
+        translate([0,0,-0.5])
+        cylinder(
+            h   = prv_PostWallThickness, 
+            r1  = prv_PostConeRiderEndCapRadius, 
+            r2  = prv_PostConeRiderEndCapRadius,
+            $fn = prv_FN
+        );
+
+        // ============ shape4: smooth cylinder section ============
         rotate([0,90,0])
-        translate([-20, -1.5, WASHER_OUTTER_DIAMETER/2+CONE_THICKNESS])
+        translate([prv_PostSmoothBarZAxisPosition,prv_PostSmoothBarYAxisPosition,prv_PostSmoothBarXAxisPosition])
         color("yellow") 
         difference(){
-            cylinder(h=ADAPTER_SMOOTH_MID_SECTION_LENGTH, r1=MID_SECTION_DIAMETER/2, r2=MID_SECTION_DIAMETER/2, $fn=100);
-            translate([0,0,1])
-            cylinder(h=ADAPTER_SMOOTH_MID_SECTION_LENGTH, r1=MID_SECTION_HOLE_DIAMETER/2, r2=MID_SECTION_HOLE_DIAMETER/2, $fn=100);
-        }
-        // grooved cylinder section
-        rotate([0,90,0])
-        translate([-20, -1.5, WASHER_OUTTER_DIAMETER/2+ADAPTER_SMOOTH_MID_SECTION_LENGTH+ADAPTER_GROOVED_MID_SECTION_LENGTH/2+CONE_THICKNESS])
-        color("yellow") simple_gear(
-            cyl_length_mm=ADAPTER_GROOVED_MID_SECTION_LENGTH,
-            cyl_diameter_mm=MID_SECTION_DIAMETER,
-            center_hole_diameter=MID_SECTION_HOLE_DIAMETER,
-            num_of_teeth=NUMBER_OF_TEETH,
-            groove_depth_mm=GROOVE_DEPTH
-        );
-    };
-
-    // right screen adapter
-    union(){
-        translate([MID_SECTION_LENGTH+WASHER_OUTTER_DIAMETER+CONE_THICKNESS*2,0,0]) 
-        mirror(){
-            rotate([0,0,-135])
-            color("yellow") bezier_cone(
-                p0=[10,29],
-                p1=[10,15],
-                p2=[5,0],
-                w=CONE_THICKNESS,
-                fill_degrees=180
+            cylinder(
+                h   = prv_PostSmoothBarLength, 
+                r1  = prv_BarRadius, 
+                r2  = prv_BarRadius,
+                $fn = prv_FN
             );
-            translate([0,0,30+CONE_THICKNESS/2])
-            rotate([0,90,0])
-            washer(
-                diameter_mm=WASHER_OUTTER_DIAMETER,
-                hole_diameter_mm=WASHER_INNER_DIAMETER,
-                thickness_mm=WAHSER_THICKNESS,
-                slice_angle=[0,0,0]
-            );   
+            translate([0,0,prv_PostWallThickness])
+            cylinder(
+                h   = prv_PostSmoothBarLength, 
+                r1  = prv_BarInnerHoleRadius, 
+                r2  = prv_BarInnerHoleRadius,
+                $fn = prv_FN
+            );
         };
-        // smooth cylinder sction
+
+        // ============ shape5: grooved cylinder section ============
         rotate([0,90,0])
-        translate([-20, -1.5, GROOVED_MID_SECTION_LENGTH+WASHER_OUTTER_DIAMETER/2+ADAPTER_GROOVED_MID_SECTION_LENGTH*2+ADAPTER_SMOOTH_MID_SECTION_LENGTH+CONE_THICKNESS])
-        color("yellow") 
-        difference(){
-            cylinder(h=ADAPTER_SMOOTH_MID_SECTION_LENGTH, r1=MID_SECTION_DIAMETER/2, r2=MID_SECTION_DIAMETER/2, $fn=100);
-            translate([0,0,-1])
-            cylinder(h=ADAPTER_SMOOTH_MID_SECTION_LENGTH, r1=MID_SECTION_HOLE_DIAMETER/2, r2=MID_SECTION_HOLE_DIAMETER/2, $fn=100);
-        }
-        // grooved cylinder section
-        rotate([0,90,0])
-        translate([-20, -1.5, GROOVED_MID_SECTION_LENGTH+WASHER_OUTTER_DIAMETER/2+ADAPTER_GROOVED_MID_SECTION_LENGTH+ADAPTER_SMOOTH_MID_SECTION_LENGTH+ADAPTER_GROOVED_MID_SECTION_LENGTH/2+CONE_THICKNESS])
+        translate([prv_PostRickBarZAxisPosition,prv_PostRickBarYAxisPosition,prv_PostRickBarXAxisPosition])
         color("yellow") simple_gear(
-            cyl_length_mm=ADAPTER_GROOVED_MID_SECTION_LENGTH,
-            cyl_diameter_mm=MID_SECTION_DIAMETER,
-            center_hole_diameter=MID_SECTION_HOLE_DIAMETER,
-            num_of_teeth=NUMBER_OF_TEETH,
-            groove_depth_mm=GROOVE_DEPTH
+            cyl_length_mm           = prv_PostRickBarLength,
+            cyl_diameter_mm         = prv_BarDiameter,
+            center_hole_diameter    = prv_BarInnerHoleDiameter,
+            num_of_teeth            = prv_BarNumberOfTeeth,
+            groove_depth_mm         = prv_BarToothDepth,
+            $fn                     = prv_FN
         );
     };
 
-    // middle accessory attachment
-    rotate([0,90,0])
-    translate([-20, -1.5,GROOVED_MID_SECTION_LENGTH/2+ADAPTER_GROOVED_MID_SECTION_LENGTH+ADAPTER_SMOOTH_MID_SECTION_LENGTH+WASHER_OUTTER_DIAMETER/2+CONE_THICKNESS]) 
-    simple_gear(
-        cyl_length_mm=GROOVED_MID_SECTION_LENGTH,
-        cyl_diameter_mm=MID_SECTION_DIAMETER,
-        center_hole_diameter=MID_SECTION_HOLE_DIAMETER,
-        num_of_teeth=NUMBER_OF_TEETH,
-        groove_depth_mm=GROOVE_DEPTH
-    );
-};
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // This section creates a cone that fills the inside of shape1 (cone body).  This is then used to
+    // subtract the cylinder overvlow, (portion that went through the cone body), to create a fill shape  
+    // that fills the space between shape1 and shape4.  
+
+    // WARNING: Nothing about this section is parametarized and requries manual changes if any of the below
+    //          module parameter values are changed:
+    //          ADAPTER_WasherDiameter, ADAPTER_WasherHoleDiameter, ADAPTER_WallThickness, 
+    //          ADAPTER_ConeLength,     ADAPTER_EndDiameter
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    difference(){
+            // ============ shape6: cone fill ============
+        rotate([0,90,0])
+        translate([prv_PostSmoothBarZAxisPosition,prv_PostRickBarYAxisPosition,prv_PostSmoothBarXAxisPosition-(prv_PostWallThickness*3.5)])
+        color("green") 
+        cylinder(
+            h   = prv_PostWallThickness*3.5, 
+            r1  = prv_BarRadius, 
+            r2  = prv_BarRadius,
+            $fn = prv_FN
+        );
+        // ============ shape7: gap fill ============
+        rotate([0,0,-135])
+        color("red") bezier_cone(
+            p0              = [prv_PostConeWasherSideRadius-6,prv_PostConeLength-4],
+            p1              = [10-5.5,15],  // TODO: parametarize curve values
+            p2              = [prv_PostConeRiderSideRadius-6,0],
+            w               = prv_PostWallThickness+4,
+            fill_degrees    = 360,
+            $fn             = prv_FN
+        ); 
+    };
+}
+
+// // left side
+screen_post_adapter();
+// right side
+translate([prv_PostRightAdapterXPosition+10,0,0])
+mirror()
+screen_post_adapter();
+
+
+translate([5,0,0])
+// middle accessory attachment
+rotate([0,90,0])
+translate([prv_BarZAxisPosition,prv_BarYAxisPosition,prv_BarXAxisPosition]) 
+color("yellow")
+simple_gear(
+    cyl_length_mm           = prv_BarMidSectionLength,
+    cyl_diameter_mm         = prv_BarDiameter,
+    center_hole_diameter    = prv_BarInnerHoleDiameter,
+    num_of_teeth            = prv_BarNumberOfTeeth,
+    groove_depth_mm         = prv_BarToothDepth,
+    $fn                     = FN
+);
