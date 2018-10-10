@@ -34,8 +34,8 @@ Thickness of the washer, cone, and end-cap walls.
 __Margin__:
 Tollerance added to windshield post side of the adapter and bar inner hole.
 
-### Adapter 
-[Dash Accessory Bar](docs/images/adapter_components.png)
+### Adapter Components
+![Adapter Components](images/adapter_components.png)
 
 ## Parameters
 Parameters in the 'Module parameters' section of dash_accessory_bar_v1.scad should be pretty self explanatory.  They allow you to change most of the values needed to build the model.  
