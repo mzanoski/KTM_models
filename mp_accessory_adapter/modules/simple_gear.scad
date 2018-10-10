@@ -19,7 +19,7 @@ module simple_gear(
 
     difference(){
         star(star_teeth_num, [(start_diameter-groove_depth_mm),start_diameter], cyl_length_mm);
-        cylinder(h=cyl_length_mm+0.1, r1=center_hole_radius, r2=center_hole_radius, center=true, $fn=100);
+        cylinder(h=cyl_length_mm+0.1, r1=center_hole_radius, r2=center_hole_radius, center=true);
     };
 }
 

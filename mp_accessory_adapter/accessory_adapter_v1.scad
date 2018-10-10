@@ -13,7 +13,7 @@ ADAPTER_Margin                          = 0.5;
 // mid section cylinder - 'Rick' bar
 BAR_Length                              = 175;
 BAR_Diameter                            = 17;
-BAR_InnerHoleDiameter                   = 10;
+BAR_InnerHoleDiameter                   = 9.7;
 BAR_NumberOfTeeth                       = 20;
 BAR_ToothDepth                          = 1;
 
@@ -29,7 +29,6 @@ ADAPTER_RickBarLength                   = 10;
 ADAPTER_SmoothBarLength                 = 10;
 
 //////////////////////// 'Private' Calculated Values ////////////////////////
-prv_FN                          = FN;
 // Rick bar section
 prv_BarDiameter                 = BAR_Diameter;
 prv_BarRadius                   = BAR_Diameter/2;
@@ -74,8 +73,7 @@ module screen_post_adapter(){
             diameter_mm         = prv_PostWasherOutterDiameter,
             hole_diameter_mm    = prv_PostWasherInnerDiameter,
             thickness_mm        = prv_PostWallThickness,
-            slice_angle         = [0,0,0],
-            $fn                 = prv_FN
+            slice_angle         = [0,0,0]
         );
 
         // ============ shape2: cone body ============
@@ -85,8 +83,7 @@ module screen_post_adapter(){
             p1              = [10,15],  // TODO: WARNING - this curve is not parametarized
             p2              = [prv_PostConeRiderSideRadius,0],
             w               = prv_PostWallThickness,
-            fill_degrees    = 180,
-            $fn             = prv_FN
+            fill_degrees    = 180
         );
 
         // ============ shape3: cone rider end cap ============
@@ -94,8 +91,7 @@ module screen_post_adapter(){
         cylinder(
             h   = prv_PostWallThickness, 
             r1  = prv_PostConeRiderEndCapRadius, 
-            r2  = prv_PostConeRiderEndCapRadius,
-            $fn = prv_FN
+            r2  = prv_PostConeRiderEndCapRadius
         );
 
         // ============ shape4: smooth cylinder section ============
@@ -106,15 +102,13 @@ module screen_post_adapter(){
             cylinder(
                 h   = prv_PostSmoothBarLength, 
                 r1  = prv_BarRadius, 
-                r2  = prv_BarRadius,
-                $fn = prv_FN
+                r2  = prv_BarRadius
             );
             translate([0,0,prv_PostWallThickness])
             cylinder(
                 h   = prv_PostSmoothBarLength, 
                 r1  = prv_BarInnerHoleRadius, 
-                r2  = prv_BarInnerHoleRadius,
-                $fn = prv_FN
+                r2  = prv_BarInnerHoleRadius
             );
         };
 
@@ -126,8 +120,7 @@ module screen_post_adapter(){
             cyl_diameter_mm         = prv_BarDiameter,
             center_hole_diameter    = prv_BarInnerHoleDiameter,
             num_of_teeth            = prv_BarNumberOfTeeth,
-            groove_depth_mm         = prv_BarToothDepth,
-            $fn                     = prv_FN
+            groove_depth_mm         = prv_BarToothDepth
         );
     };
 
@@ -149,8 +142,7 @@ module screen_post_adapter(){
         cylinder(
             h   = prv_PostWallThickness*3.5, 
             r1  = prv_BarRadius, 
-            r2  = prv_BarRadius,
-            $fn = prv_FN
+            r2  = prv_BarRadius
         );
         // ============ shape7: gap fill ============
         rotate([0,0,-135])
@@ -159,30 +151,31 @@ module screen_post_adapter(){
             p1              = [10-5.5,15],  // TODO: parametarize curve values
             p2              = [prv_PostConeRiderSideRadius-6,0],
             w               = prv_PostWallThickness+4,
-            fill_degrees    = 360,
-            $fn             = prv_FN
+            fill_degrees    = 360
         ); 
     };
 }
 
+module mid_bar(){
+    // middle accessory attachment
+    rotate([0,90,0])
+    translate([prv_BarZAxisPosition,prv_BarYAxisPosition,prv_BarXAxisPosition]) 
+    color("yellow")
+    simple_gear(
+        cyl_length_mm           = prv_BarMidSectionLength,
+        cyl_diameter_mm         = prv_BarDiameter,
+        center_hole_diameter    = prv_BarInnerHoleDiameter,
+        num_of_teeth            = prv_BarNumberOfTeeth,
+        groove_depth_mm         = prv_BarToothDepth
+    );
+}
+
+
 // // left side
 screen_post_adapter();
-// right side
-translate([prv_PostRightAdapterXPosition+10,0,0])
-mirror()
-screen_post_adapter();
+// // right side
+// translate([prv_PostRightAdapterXPosition+10,0,0])
+// mirror()
+// screen_post_adapter();
 
-
-translate([5,0,0])
-// middle accessory attachment
-rotate([0,90,0])
-translate([prv_BarZAxisPosition,prv_BarYAxisPosition,prv_BarXAxisPosition]) 
-color("yellow")
-simple_gear(
-    cyl_length_mm           = prv_BarMidSectionLength,
-    cyl_diameter_mm         = prv_BarDiameter,
-    center_hole_diameter    = prv_BarInnerHoleDiameter,
-    num_of_teeth            = prv_BarNumberOfTeeth,
-    groove_depth_mm         = prv_BarToothDepth,
-    $fn                     = FN
-);
+// mid_bar();
