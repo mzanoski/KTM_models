@@ -4,35 +4,19 @@ This is an attachment with a grooved bar that can be attached to windshield bolt
 ## Definitions
 These terms are used in scad file and are important for understanding parameters and how to make changes to your model.
 
-__Adapter__:
-Conic portion of the attachment that is bolted to the top of the windscreen post.  
+| Item | Description |
+| --- | --- |
+| __Adapter__ | Conic portion of the attachment that is bolted to the top of the windscreen post |
+| __Bar__ | Cylinder that stretches between the two windscreen mounts |
+| __Bar Inner Hole__ | The hole inside of the bar |
+| __Washer__ | Circle with a hole on the bolt side of the adapter |
+| __End-Cap__ | Circle that covers the rider side of the adapter |
+| __Cone__ | Conic shape between the washer and end-cap |
+| __Smooth Bar__ | Smooth -without grooves/teeth- portion of the cylinder of the adapter |
+| __Rick Bar__ | Grooved portion of the cylinder of the adapter |
+| __Wall Thickness__ | Thickness of the washer, cone, and end-cap walls |
+| __Margin__ | Tollerance added to windshield post side of the adapter and bar inner hole |
 
-__Bar__:
-Cylinder that stretches between the two windscreen mounts.
-
-__Bar Inner Hole__:
-The hole inside of the bar.
-
-__Washer__:
-Circle with a hole on the bolt side of the adapter.
-
-__End-Cap__:
-Circle that covers the rider side of the adapter.
-
-__Cone__:
-Conic shape between the washer and end-cap.
-
-__Smooth Bar__:
-Smooth -without grooves/teeth- portion of the cylinder of the adapter.
-
-__Rick Bar__:
-Grooved portion of the cylinder of the adapter.
-
-__Wall Thickness__:
-Thickness of the washer, cone, and end-cap walls.
-
-__Margin__:
-Tollerance added to windshield post side of the adapter and bar inner hole.
 
 ### Adapter Components
 ![Adapter Components](images/adapter_components.png)
