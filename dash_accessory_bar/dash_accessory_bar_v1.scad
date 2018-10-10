@@ -3,11 +3,10 @@
 // TOOD: adjust values as per test prints
 
 use <modules/washer.scad>
-use <modules/quadratic_bezier.scad>
+use <modules/quadriatic_bezier.scad>
 use <modules/simple_gear.scad>
 
 ///////////////////////////// Module parameters /////////////////////////////
-FN                                      = 100;
 ADAPTER_Margin                          = 0.5;
 
 // mid section cylinder - 'Rick' bar
@@ -172,10 +171,10 @@ module mid_bar(){
 
 
 // // left side
-screen_post_adapter();
+// screen_post_adapter();
 // // right side
 // translate([prv_PostRightAdapterXPosition+10,0,0])
 // mirror()
 // screen_post_adapter();
 
-// mid_bar();
+mid_bar();
