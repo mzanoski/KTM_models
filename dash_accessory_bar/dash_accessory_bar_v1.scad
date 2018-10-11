@@ -12,7 +12,7 @@ ADAPTER_Margin                          = 0.5;
 // mid section cylinder - 'Rick' bar
 BAR_Length                              = 175;
 BAR_Diameter                            = 17;
-BAR_InnerHoleDiameter                   = 9.7;
+BAR_InnerHoleDiameter                   = 9.3;
 BAR_NumberOfTeeth                       = 20;
 BAR_ToothDepth                          = 1;
 
@@ -21,11 +21,11 @@ ADAPTER_WasherDiameter                  = 17.5;
 ADAPTER_WasherHoleDiameter              = 5;
 ADAPTER_WallThickness                   = 2;
 ADAPTER_ConeLength                      = 40;
-ADAPTER_EndDiameter                     = 11;
+ADAPTER_EndDiameter                     = 9.5;
 
 // post adapter - cylynder transition
 ADAPTER_RickBarLength                   = 10;
-ADAPTER_SmoothBarLength                 = 10;
+ADAPTER_SmoothBarLength                 = 0;
 
 //////////////////////// 'Private' Calculated Values ////////////////////////
 // Rick bar section
@@ -43,7 +43,7 @@ prv_PostConeWasherSideRadius    = (ADAPTER_WasherDiameter+ADAPTER_Margin)/2;
 prv_PostWasherOutterDiameter    = (prv_PostConeWasherSideRadius*2)+prv_PostWallThickness*2;
 prv_PostWasherInnerDiameter     = ADAPTER_WasherHoleDiameter+ADAPTER_Margin;
 prv_PostConeRiderSideRadius     = (ADAPTER_EndDiameter+ADAPTER_Margin)/2;
-prv_PostConeRiderEndCapRadius   = prv_PostConeRiderSideRadius+prv_PostWallThickness+0.5;
+prv_PostConeRiderEndCapRadius   = prv_PostConeRiderSideRadius+0.5;
 prv_PostConeLength              = ADAPTER_ConeLength+ADAPTER_Margin;
 prv_PostSmoothBarLength         = ADAPTER_SmoothBarLength;
 prv_PostRickBarLength           = ADAPTER_RickBarLength;
@@ -76,23 +76,35 @@ module screen_post_adapter(){
         );
 
         // ============ shape2: cone body ============
-        rotate([0,0,-135])
-        color("yellow") bezier_cone(
-            p0              = [prv_PostConeWasherSideRadius,prv_PostConeLength],
-            p1              = [10,15],  // TODO: WARNING - this curve is not parametarized
-            p2              = [prv_PostConeRiderSideRadius,0],
-            w               = prv_PostWallThickness,
-            fill_degrees    = 180
-        );
+        difference(){
+            rotate([0,0,-155])
+            color("yellow") bezier_cone(
+                p0              = [prv_PostConeWasherSideRadius,prv_PostConeLength],
+                p1              = [9,15],  // TODO: WARNING - this curve is not parametarized
+                p2              = [prv_PostConeRiderSideRadius,-prv_PostWallThickness-ADAPTER_Margin],
+                w               = prv_PostWallThickness,
+                fill_degrees    = 200
+            );
+            translate([0,0,-prv_PostWallThickness*4])
+            rotate([-16,0,0])
+            color("red")
+            cylinder(
+                h   = prv_PostWallThickness*4,
+                r1  = prv_PostConeRiderEndCapRadius*10,
+                r2  = prv_PostConeRiderEndCapRadius*10
+            );
+        };
 
         // ============ shape3: cone rider end cap ============
-        translate([0,0,-0.5])
-        cylinder(
-            h   = prv_PostWallThickness, 
-            r1  = prv_PostConeRiderEndCapRadius, 
-            r2  = prv_PostConeRiderEndCapRadius
+        translate([0,0,prv_PostWallThickness+0.5])
+        rotate([0,90,0])
+        washer(
+            diameter_mm         = prv_PostConeRiderEndCapRadius*2+prv_PostWallThickness,
+            hole_diameter_mm    = 0,
+            thickness_mm        = prv_PostWallThickness,
+            slice_angle         = [0,0,-16]
         );
-
+        
         // ============ shape4: smooth cylinder section ============
         rotate([0,90,0])
         translate([prv_PostSmoothBarZAxisPosition,prv_PostSmoothBarYAxisPosition,prv_PostSmoothBarXAxisPosition])
@@ -134,22 +146,24 @@ module screen_post_adapter(){
     //          ADAPTER_ConeLength,     ADAPTER_EndDiameter
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     difference(){
-            // ============ shape6: cone fill ============
+        // ============ shape6: cone fill ============
         rotate([0,90,0])
-        translate([prv_PostSmoothBarZAxisPosition,prv_PostRickBarYAxisPosition,prv_PostSmoothBarXAxisPosition-(prv_PostWallThickness*3.5)])
-        color("green") 
-        cylinder(
-            h   = prv_PostWallThickness*3.5, 
-            r1  = prv_BarRadius, 
-            r2  = prv_BarRadius
+        translate([prv_PostSmoothBarZAxisPosition,prv_PostRickBarYAxisPosition,prv_PostSmoothBarXAxisPosition-(prv_PostWallThickness*3.5)/2])
+        color("blue") simple_gear(
+            cyl_length_mm           = prv_PostWallThickness*3.5,
+            cyl_diameter_mm         = prv_BarDiameter,
+            center_hole_diameter    = prv_BarInnerHoleDiameter,
+            num_of_teeth            = prv_BarNumberOfTeeth,
+            groove_depth_mm         = prv_BarToothDepth
         );
+
         // ============ shape7: gap fill ============
         rotate([0,0,-135])
         color("red") bezier_cone(
-            p0              = [prv_PostConeWasherSideRadius-6,prv_PostConeLength-4],
-            p1              = [10-5.5,15],  // TODO: parametarize curve values
-            p2              = [prv_PostConeRiderSideRadius-6,0],
-            w               = prv_PostWallThickness+4,
+            p0              = [prv_PostConeWasherSideRadius-5,prv_PostConeLength-3],
+            p1              = [10-5.5,25],  // TODO: parametarize curve values
+            p2              = [prv_PostConeRiderSideRadius-5,0],
+            w               = prv_PostWallThickness+3,
             fill_degrees    = 360
         ); 
     };
@@ -171,10 +185,11 @@ module mid_bar(){
 
 
 // // left side
-// screen_post_adapter();
+// rotate([90,-180,0])
+screen_post_adapter();
 // // right side
 // translate([prv_PostRightAdapterXPosition+10,0,0])
 // mirror()
 // screen_post_adapter();
 
-mid_bar();
+// mid_bar();
