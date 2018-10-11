@@ -8,7 +8,7 @@ These terms are used in scad file and are important for understanding parameters
 | --- | --- |
 | __Adapter__ | Conic portion of the attachment that is bolted to the top of the windscreen post |
 | __Bar__ | Cylinder that stretches between the two windscreen mounts |
-| __Bar Inner Hole__ | The hole inside of the bar |
+| __Bar Inner Hole__ | The hole inside of the bar used to insert aluminum tube or rod for additional strength |
 | __Washer__ | Circle with a hole on the bolt side of the adapter |
 | __End-Cap__ | Circle that covers the rider side of the adapter |
 | __Cone__ | Conic shape between the washer and end-cap |
@@ -18,8 +18,11 @@ These terms are used in scad file and are important for understanding parameters
 | __Margin__ | Tollerance added to windshield post side of the adapter and bar inner hole |
 
 
-### Adapter Components
-![Adapter Components](images/adapter_components.png)
+### Adapter 
+![Adapter](images/adapter_components.png)
+
+### Bar
+![Bar](images/bar.png)
 
 ## Parameters
 Parameters in the 'Module parameters' section of dash_accessory_bar_v1.scad should be pretty self explanatory.  They allow you to change most of the values needed to build the model.  
