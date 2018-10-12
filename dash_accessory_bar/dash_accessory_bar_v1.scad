@@ -10,11 +10,12 @@ use <modules/simple_gear.scad>
 ADAPTER_Margin                          = 0.5;
 
 // mid section cylinder - 'Rick' bar
-BAR_Length                              = 175;
-BAR_Diameter                            = 17;
-BAR_InnerHoleDiameter                   = 9.3;
+BAR_Length                              = 173;
+BAR_Diameter                            = 18;
+BAR_InnerHoleDiameter                   = 9;
 BAR_NumberOfTeeth                       = 20;
 BAR_ToothDepth                          = 1;
+BAR_AntiRollBarHoleDiameter             = 2;
 
 // post adapter section
 ADAPTER_WasherDiameter                  = 17.5;
@@ -55,13 +56,20 @@ prv_PostRickBarZAxisPosition        = prv_BarRadius-prv_PostConeLength;
 
 prv_BarYAxisPosition                = -prv_PostWallThickness;
 prv_PostSmoothBarYAxisPosition      = -prv_PostWallThickness;
-prv_PostRickBarYAxisPosition        = -prv_PostWallThickness;
+prv_PostRickBarYAxisPosition        = -prv_PostWallThickness+0.5;
 // X-axis is different for every bar section
 prv_PostSmoothBarXAxisPosition      = prv_PostWasherOutterDiameter/2;
 prv_PostRickBarXAxisPosition        = prv_PostSmoothBarXAxisPosition+(prv_PostRickBarLength/2)+prv_PostSmoothBarLength;
 prv_BarXAxisPosition                = prv_PostRickBarXAxisPosition+(prv_PostRickBarLength/2)+prv_BarMidSectionLength/2;
 
-prv_PostRightAdapterXPosition       = 2*prv_PostConeWasherSideRadius+2*prv_PostRickBarLength+2*prv_PostSmoothBarLength+prv_BarMidSectionLength+2*prv_PostWallThickness;
+prv_PostRightAdapterXPosition       = 2*prv_PostConeWasherSideRadius+2*prv_PostRickBarLength+(2*prv_PostSmoothBarLength)+prv_BarMidSectionLength+2*prv_PostWallThickness;
+
+// anti-roll bar
+prv_BarAntiRollBarHoleRadius        = BAR_AntiRollBarHoleDiameter/2;
+prv_BarAntiRollBarHoleLength        = BAR_Length+(prv_PostConeWasherSideRadius*2);
+prv_BarAntiRollBarHoleYAxisPosition = prv_BarYAxisPosition-1;
+prv_BarAntiRollBarHoleZAxisPosition = prv_BarZAxisPosition+prv_BarInnerHoleRadius+prv_BarAntiRollBarHoleRadius+0.5;
+
 
 module screen_post_adapter(){
     union(){
@@ -77,13 +85,13 @@ module screen_post_adapter(){
 
         // ============ shape2: cone body ============
         difference(){
-            rotate([0,0,-155])
+            rotate([0,0,-165])
             color("yellow") bezier_cone(
                 p0              = [prv_PostConeWasherSideRadius,prv_PostConeLength],
                 p1              = [9,15],  // TODO: WARNING - this curve is not parametarized
                 p2              = [prv_PostConeRiderSideRadius,-prv_PostWallThickness-ADAPTER_Margin],
                 w               = prv_PostWallThickness,
-                fill_degrees    = 200
+                fill_degrees    = 215
             );
             translate([0,0,-prv_PostWallThickness*4])
             rotate([-16,0,0])
@@ -183,13 +191,33 @@ module mid_bar(){
     );
 }
 
+module anti_roll_bar_hole(){
+    rotate([0,90,0])
+    translate([prv_BarAntiRollBarHoleZAxisPosition,prv_BarAntiRollBarHoleYAxisPosition,0])
+    cylinder(
+        h   = prv_BarAntiRollBarHoleLength,
+        r1  = prv_BarAntiRollBarHoleRadius,
+        r2  = prv_BarAntiRollBarHoleRadius,
+        $fn = 20
+    );
+}
 
-// // left side
-// rotate([90,-180,0])
-screen_post_adapter();
-// // right side
-// translate([prv_PostRightAdapterXPosition+10,0,0])
-// mirror()
-// screen_post_adapter();
 
-// mid_bar();
+// left side
+difference(){
+    screen_post_adapter();
+    anti_roll_bar_hole();
+}
+// right side
+difference(){
+    translate([prv_PostRightAdapterXPosition,0,0])
+    mirror()
+    screen_post_adapter();
+    anti_roll_bar_hole();
+}
+
+difference(){
+    mid_bar();
+    anti_roll_bar_hole();
+}
+

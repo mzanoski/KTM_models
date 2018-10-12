@@ -12,17 +12,14 @@ These terms are used in scad file and are important for understanding parameters
 | __Washer__ | Circle with a hole on the bolt side of the adapter |
 | __End-Cap__ | Circle that covers the rider side of the adapter |
 | __Cone__ | Conic shape between the washer and end-cap |
-| __Smooth Bar__ | Smooth -without grooves/teeth- portion of the cylinder of the adapter |
+| __Anti-Roll Hole__ | Hole through the entire accessory bar for a pin that will prevent the bar from rolling |
 | __Rick Bar__ | Grooved portion of the cylinder of the adapter |
 | __Wall Thickness__ | Thickness of the washer, cone, and end-cap walls |
 | __Margin__ | Tollerance added to windshield post side of the adapter and bar inner hole |
 
-
-### Adapter 
-![Adapter](images/adapter_components.png)
-
-### Bar
-![Bar](images/bar.png)
+| Adapter | Bar |
+| --- | --- |
+| ![Adapter](images/adapter.png)| ![Bar](images/bar.png) |
 
 ## Parameters
 Parameters in the 'Module parameters' section of dash_accessory_bar_v1.scad should be pretty self explanatory.  They allow you to change most of the values needed to build the model.  
