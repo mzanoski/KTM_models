@@ -1,7 +1,3 @@
-// TODO: documentation
-// TODO: images and definitions
-// TOOD: adjust values as per test prints
-
 use <modules/washer.scad>
 use <modules/quadriatic_bezier.scad>
 use <modules/simple_gear.scad>
