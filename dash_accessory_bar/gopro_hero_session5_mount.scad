@@ -2,16 +2,13 @@ use <modules/gopro_mounts_mooncactus.scad>
 use <modules/simple_gear.scad>
 
 ///////////////////////////// Module parameters /////////////////////////////
-BAR_Length                              = 173;
 BAR_Diameter                            = 18;
 BAR_ToothDepth                          = 1;
 BAR_NumberOfTeeth                       = 20;
 CLAMP_Width                             = gopro_connector_z_func()*1.5;
-CLAMP_Gap                               = 1;
-POST_Height                             = 14.7;
+CLAMP_Gap                               = 0.5;
+POST_Height                             = 18;
 POST_HoleRadius                         = gopro_connector_y_func()-5;
-
-
 
 //////////////////////// 'Private' Calculated Values ////////////////////////
 // Rick bar section
@@ -27,18 +24,16 @@ prv_goproPostDepth              = gopro_connector_y_func()+4.35;
 prv_goproPostHoleRadius         = POST_HoleRadius;
 prv_goproPostHoleHeight         = prv_gporoPostHeight;
 prv_goproClampYPosition         = prv_gporoPostHeight;
-prv_goproClampPadding           = 10;
+prv_goproClampPadding           = 4;
 prv_goproClampGap               = CLAMP_Gap;
 
-
-// Add a bar mount/clamp to one of the connector
 module mount_clamp(){
     // clamp
     union(){
         translate([0,prv_goproClampYPosition,0])
         gopro_bar_clamp(
             rod_d= prv_goproClampDiameter+prv_goproClampPadding, // rod diameter
-            th= 7.8, // main thickness
+            th= 7, // main thickness
             gap= prv_goproClampGap, // space between the clamps
             screw_d= 3, // screw diameter
             screw_head_d= 6.2, // screw head diameter
@@ -49,7 +44,7 @@ module mount_clamp(){
         translate([0,prv_goproClampDiameter/2+gopro_connector_z_func()+prv_goproClampPadding/2+prv_goproClampYPosition,0])
         difference(){
             difference(){
-                cylinder(r=prv_goproClampDiameter-1, h=prv_goproPostHoleHeight, center=true);
+                cylinder(r=prv_goproGrooveDiameter/2+2, h=prv_goproPostHoleHeight-3.3, center=true);
                 // inner groove
                 color("blue")
                 simple_gear(
@@ -67,7 +62,7 @@ module mount_clamp(){
 
 module mount_post(){
     color("blue")
-    translate([0,prv_gpproConnectorHeight,0])
+    translate([0,prv_gpproConnectorHeight+2,0])
     cube([prv_goproPostWidth,prv_gporoPostHeight,prv_goproPostDepth],center=true);
 }
 
@@ -78,8 +73,6 @@ module mount_inner_hole(){
     cylinder(r=prv_goproPostHoleRadius, h=prv_goproPostHoleHeight, center=false);
 }
 
-
-// Create a "triple" gopro connector
 union(){
     gopro_connector("triple");
     // clamp
