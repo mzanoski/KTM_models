@@ -5,4 +5,4 @@ This repo contains 3d models for 2017 KTM 1290 Super Adventure R accessories.
 
 ## Models
 [Dash Accessory Bar](docs/dash_accessory_bar.md)\
-[Dash GoPro Mount](docs/dash_gopro_hero_session5_mount.md)
+[Dash GoPro Mount](docs/dash_gopro_mount.md)
