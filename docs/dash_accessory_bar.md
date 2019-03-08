@@ -21,6 +21,9 @@ These terms are used in scad file and are important for understanding parameters
 | --- | --- |
 | ![Adapter](images/adapter.png)| ![Bar](images/bar.png) |
 
+## Complete Accesory Bar
+![Accessory Bar](images/accessory_bar.png)
+
 ## My Build Notes
 1.  Leave the adapter a little, probably less than 0.5 mm, larger and lined the inside with two-sided outdoor carpet tape.  This results in a snug fit, prevents rattling, and end-cap lifting.
 
